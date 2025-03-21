@@ -1,0 +1,7 @@
+query : |
+  f"""
+  En te basant sur ces instructions, voici le message à catégoriser :
+
+  Message : "{message}"
+  Réponse :
+  """
