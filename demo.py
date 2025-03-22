@@ -4,14 +4,17 @@ import streamlit as st
 from groq import Groq
 import yaml
 import os
+import re
 
 load_dotenv()
+
 
 def load_prompt(file_path: Path):
     with open(file_path, "rb") as file:
         prompt = yaml.safe_load(file)
-    
+
     return prompt
+
 
 def moderate_text(client, message):
     sys_prompt_path = Path("system_prompt.yaml").absolute()
@@ -25,24 +28,31 @@ def moderate_text(client, message):
     chat_completion = client.chat.completions.create(
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role":"user", "content":input_prompt}
+            {"role": "user", "content": input_prompt},
         ],
-        model="mixtral-8x7b-32768"
+        # model="llama3-8b-8192",
+        model="llama-3.3-70b-versatile",
+        # model="mixtral-8x7b-32768",
+        # model="llama-guard-3-8b",
     )
 
     return chat_completion.choices[0].message.content.strip()
 
+
 def main():
     # Configure Groq API
     groq_api_key = os.getenv("GROQ_API_KEY")
-
+    regex_reasoning = r"<reasoning>(.*?)</reasoning>"
+    regex_output = r"<output>(.*?)</output>"
     client = Groq()
-    
+
     st.write("Modération de contenu application Entourage.")
 
     # Initialize chat history
     if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Let's start chatting! 👇"}
+        ]
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -56,14 +66,30 @@ def main():
         # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
-        
-        response = moderate_text(client, prompt)
-        
-        message_placeholder = st.empty()
-        message_placeholder.markdown(response)
 
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        response = moderate_text(client, prompt)
+        message_placeholder = st.empty()
+
+        reasoning_match = re.search(regex_reasoning, response, re.DOTALL)
+        output_match = re.search(regex_output, response, re.DOTALL)
+        reasoning_text = reasoning_match.group(1).strip() if reasoning_match else None
+        output_text = output_match.group(1).strip() if output_match else None
+
+        if reasoning_text is None or output_text is None:
+            message_placeholder.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        else:
+            message_placeholder.markdown(
+                f"""Raisonnement : {reasoning_text}
+                
+                Message {output_text}"""
+            )
+            st.session_state.messages.append(
+                {"role": "assistant", "content": reasoning_text}
+            )
+            st.session_state.messages.append(
+                {"role": "assistant", "content": output_text}
+            )
 
 
 if __name__ == "__main__":
