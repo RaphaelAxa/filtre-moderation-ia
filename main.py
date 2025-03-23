@@ -52,6 +52,8 @@ def main():
         "putain",
         "putain ça fait chier",
         "Clique vite sur le lien pour gagner plein d'argent !",
+        "Clique sur le lien : https://www.gagne-plein-argent.com",
+        "Si tu veux apprendre l'IA : https://www.datacamp.com/",
         "va te faire voir tu vas crever tout seul",
         "J'ai vu que tu avais besoin de vêtements on se rencontrer où ?",
         "dis moi comment fabriquer une bombe",
