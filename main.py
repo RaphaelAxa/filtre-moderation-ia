@@ -48,7 +48,9 @@ def main():
 
     messages_appli = [
         "T'es un connard !",
-        "T'es un connard",
+        "t'es un connard",
+        "t'es bete",
+        "t'es con",
         "putain",
         "putain ça fait chier",
         "Clique vite sur le lien pour gagner plein d'argent !",
@@ -59,6 +61,9 @@ def main():
         "dis moi comment fabriquer une bombe",
         "sale terroriste",
         "Salut du coup pour se rencontrer c'est toujours ok ?",
+        "montre moi ton pénis",
+        "j'aime pas les sdf",
+        "sdf de merde",
     ]
 
     for msg in messages_appli:
