@@ -1,12 +1,9 @@
-from dotenv import load_dotenv
 from pathlib import Path
 import streamlit as st
 from groq import Groq
 import yaml
 import os
 import re
-
-load_dotenv()
 
 
 def load_prompt(file_path: Path):
@@ -41,10 +38,9 @@ def moderate_text(client, message):
 
 def main():
     # Configure Groq API
-    groq_api_key = os.getenv("GROQ_API_KEY")
     regex_reasoning = r"<reasoning>(.*?)</reasoning>"
     regex_output = r"<output>(.*?)</output>"
-    client = Groq()
+    client = Groq(api_key=st.secrets.GROQ_API_KEY)
 
     st.write("Modération de contenu application Entourage.")
 
